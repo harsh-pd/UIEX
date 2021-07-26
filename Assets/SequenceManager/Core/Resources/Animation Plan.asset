@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Animation Plan
   m_EditorClassIdentifier: 
   AnimationUnits: []
+  EnteryClips:
+  - {fileID: 7400000, guid: a9aeb6de2c020eb4a8e425ecabab1452, type: 2}
+  GeneralClips:
+  - {fileID: 7400000, guid: cee5dc9219fa3be41bb5a44ebafb30e8, type: 2}
+  ExitClips:
+  - {fileID: 7400000, guid: 146b47a937036604992348de917656f5, type: 2}

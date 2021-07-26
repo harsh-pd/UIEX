@@ -1,4 +1,4 @@
-﻿using Fordi.Animation;
+﻿using Fordi.Animations;
 using UnityEditor;
 using UnityEngine;
 

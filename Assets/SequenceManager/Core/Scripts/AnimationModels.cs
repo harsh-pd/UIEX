@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Fordi.Animation
+namespace Fordi.Animations
 {
     public enum AnimationTrigger
     {
@@ -26,19 +26,24 @@ namespace Fordi.Animation
         public int DelayInMs;
         public AnimationClip Animation;
         public string Parameter = "None";
+        public int Order;
+        public bool DisabledByDefault = true;
 
-        public AnimationUnit Previous = null;
-        public AnimationUnit Next = null;
-        public string Name = string.Empty;
+        public string AssetName;
+
+        public Guid Previous = Guid.Empty;
+        public Guid Next = Guid.Empty;
+
+        public string UnitGuid = string.Empty;
 
         private Guid m_guid;
 
         public void Refresh()
         {
-            if (string.IsNullOrEmpty(Name))
+            if (string.IsNullOrEmpty(UnitGuid))
             {
                 m_guid = Guid.NewGuid();
-                Name = m_guid.ToString();
+                UnitGuid = m_guid.ToString();
             }
         }
 
