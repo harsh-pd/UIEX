@@ -42,7 +42,7 @@ namespace Fordi
                 Command = resource.Name,
                 Icon = resource.Preview,
                 Data = resource,
-                CommandType = MenuCommandType.SELECTION
+                CommandType = MenuCommandType.SELECTION,
             };
         }
     }

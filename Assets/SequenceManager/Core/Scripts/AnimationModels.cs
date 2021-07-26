@@ -14,14 +14,14 @@ namespace Fordi.Animations
 
     public interface IAnimationItem
     {
-        void Preview();
+        void PreviewAnimation();
         void StopPreview();
     }
 
     [Serializable]
-    public class AnimationUnit : IAnimationItem
+    public class AnimationUnit : ExperienceResource, IAnimationItem
     {
-        public AnimationTrigger Trigger;
+        public AnimationTrigger Trigger = AnimationTrigger.After;
         public int ObjectHash;
         public int DelayInMs;
         public AnimationClip Animation;
@@ -47,7 +47,7 @@ namespace Fordi.Animations
             }
         }
 
-        public void Preview()
+        public void PreviewAnimation()
         {
             throw new System.NotImplementedException();
         }
@@ -63,7 +63,7 @@ namespace Fordi.Animations
     {
         public List<IAnimationItem> m_animationItems = new List<IAnimationItem>();
 
-        public void Preview()
+        public void PreviewAnimation()
         {
             throw new System.NotImplementedException();
         }

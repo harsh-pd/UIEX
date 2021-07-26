@@ -19,6 +19,8 @@ namespace Fordi.Animations
         [SerializeField]
         private AnimationPlan m_animationPlan;
 
+        public AnimationPlan AnimationPlan { get { return m_animationPlan; } }
+
         [SerializeField]
         private AnimationPlanView m_viewPrefab;
 
@@ -73,6 +75,10 @@ namespace Fordi.Animations
         private void OpenView()
         {
             m_view = Instantiate(m_viewPrefab, FindObjectOfType<Canvas>().transform);
+            m_view.OpenMenu(new MenuArgs()
+            {
+                Items = ResourceToMenuItems(m_animationPlan.AnimationUnits.ToArray())
+            });
         }
 
         private void CloseView()
@@ -85,7 +91,7 @@ namespace Fordi.Animations
 
         private void EngineItem_OnSelect(object sender, System.EventArgs e)
         {
-            Debug.LogError(((EngineObject)sender).name);
+            Debug.Log("EngineItem_OnSelect" + ((EngineObject)sender).name);
         }
 
         private IEnumerator AnimationRunner()
@@ -124,6 +130,14 @@ namespace Fordi.Animations
         public void StopPreview()
         {
             throw new System.NotImplementedException();
+        }
+
+        public static MenuItemInfo[] ResourceToMenuItems(ExperienceResource[] resources)
+        {
+            MenuItemInfo[] menuItems = new MenuItemInfo[resources.Length];
+            for (int i = 0; i < resources.Length; i++)
+                menuItems[i] = resources[i];
+            return menuItems;
         }
     }
 }
