@@ -10,6 +10,12 @@ using UnityEngine.UI;
 
 namespace Fordi.UI
 {
+    public class ValueChangeArgs
+    {
+        public string FieldName;
+        public object Value;
+    }
+
     public class AnimationPlanItem : MonoBehaviour, IMenuItem
     {
         [SerializeField]
@@ -26,6 +32,10 @@ namespace Fordi.UI
 
         [SerializeField]
         private TMP_InputField m_parameter;
+
+
+        public static event EventHandler<ValueChangeArgs> OnValueChange;
+
 
         private MenuItemInfo m_menuItem;
         public MenuItemInfo Item
@@ -49,6 +59,7 @@ namespace Fordi.UI
         public GameObject Gameobject { get { return gameObject; } }
 
         private AnimationUnit m_animationUnit;
+        public AnimationUnit AnimationUnit { get { return m_animationUnit; } }
 
         private AnimationEngine m_animationEngine;
 
@@ -89,6 +100,37 @@ namespace Fordi.UI
             m_animation.value = m_clipNames.FindIndex(val => val == m_animationUnit.Animation.name);
 
             m_parameter.text = "None";
+
+            m_trigger.onValueChanged.AddListener(OnTriggerChange);
+            m_animation.onValueChanged.AddListener(OnAnimationChange);
+            m_delay.onValueChanged.AddListener(OnDelayChange);
+        }
+
+        public void OnTriggerChange(int index)
+        {
+            OnValueChange?.Invoke(this, new ValueChangeArgs()
+            {
+                FieldName = "Trigger",
+                Value = (AnimationTrigger)index
+            });
+        }
+
+        public void OnAnimationChange(int index)
+        {
+            OnValueChange?.Invoke(this, new ValueChangeArgs()
+            {
+                FieldName = "Animation",
+                Value = m_animation.options[index].text
+            });
+        }
+
+        public void OnDelayChange(string value)
+        {
+            OnValueChange?.Invoke(this, new ValueChangeArgs()
+            {
+                FieldName = "DelayInMs",
+                Value = Int32.Parse(m_delay.text)
+            });
         }
     }
 }

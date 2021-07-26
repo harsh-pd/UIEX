@@ -1,4 +1,5 @@
-﻿using Fordi.UI.MenuControl;
+﻿using Fordi.UI;
+using Fordi.UI.MenuControl;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace Fordi.Animations
 {
     public interface IAnimationEngine
     {
-        void PPreview();
+        void Preview();
         void StopPreview();
         void Run();
         void Stop();
@@ -32,10 +33,23 @@ namespace Fordi.Animations
 
         private IEnumerator m_animationRunner = null;
 
+        private List<AnimationClip> m_clips = new List<AnimationClip>();
+
         private void Awake()
         {
             EngineObject.OnSelect += EngineItem_OnSelect;
+            AnimationPlanItem.OnValueChange += AnimationPlanItem_OnValueChange;
+            AnimationPlanView.OnOrderChange += AnimationPlanView_OnOrderChange;
+
+            foreach (var item in m_animationPlan.EnteryClips)
+                m_clips.Add(item);
+            foreach (var item in m_animationPlan.GeneralClips)
+                m_clips.Add(item);
+            foreach (var item in m_animationPlan.ExitClips)
+                m_clips.Add(item);
         }
+
+       
 
         private void Start()
         {
@@ -53,7 +67,7 @@ namespace Fordi.Animations
             }
 
             //Debugging purpose
-            Run();
+            //Run();
         }
 
         private void Update()
@@ -70,6 +84,8 @@ namespace Fordi.Animations
         private void OnDestroy()
         {
             EngineObject.OnSelect -= EngineItem_OnSelect;
+            AnimationPlanItem.OnValueChange -= AnimationPlanItem_OnValueChange;
+            AnimationPlanView.OnOrderChange -= AnimationPlanView_OnOrderChange;
         }
 
         private void OpenView()
@@ -94,6 +110,43 @@ namespace Fordi.Animations
             Debug.Log("EngineItem_OnSelect" + ((EngineObject)sender).name);
         }
 
+        private void AnimationPlanItem_OnValueChange(object sender, ValueChangeArgs e)
+        {
+            var animationItem = (AnimationPlanItem)sender;
+            var unit = animationItem.AnimationUnit;
+            var animObject = m_animationObjects.Find(item => item.AnimationUnit.UnitGuid == unit.UnitGuid);
+
+            //Temporary work. Must use reflection to implement this
+
+            switch (e.FieldName)
+            {
+                case "Trigger":
+                    animObject.AnimationUnit.Trigger = (AnimationTrigger)e.Value;
+                    break;
+                case "DelayInMs":
+                    animObject.AnimationUnit.DelayInMs = (int)e.Value;
+                    break;
+                case "Animation":
+                    var clipName = (string)e.Value;
+                    animObject.AnimationUnit.Animation = m_clips.Find(clip => clip.name == clipName);
+                    break;
+                case "Parameter":
+                    break;
+                default:
+                    break;
+            }
+
+            unit.Refresh();
+        }
+
+        private void AnimationPlanView_OnOrderChange(object sender, OrderChangeArgs e)
+        {
+            var animationItem = (AnimationPlanItem)sender;
+            var unit = animationItem.AnimationUnit;
+            var animObject = m_animationObjects.Find(item => item.AnimationUnit.UnitGuid == unit.UnitGuid);
+
+        }
+
         private IEnumerator AnimationRunner()
         {
             while (m_planQueue.Count > 0)
@@ -105,7 +158,7 @@ namespace Fordi.Animations
             }
         }
 
-        public void PPreview()
+        public void Preview()
         {
             throw new System.NotImplementedException();
         }
@@ -124,7 +177,11 @@ namespace Fordi.Animations
 
         public void Stop()
         {
-            throw new System.NotImplementedException();
+            if (m_animationRunner != null)
+                StopCoroutine(m_animationRunner);
+
+            foreach (var item in m_animationObjects)
+                item.Stop();
         }
 
         public void StopPreview()

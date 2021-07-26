@@ -45,6 +45,11 @@ namespace Fordi.Animations
                 m_guid = Guid.NewGuid();
                 UnitGuid = m_guid.ToString();
             }
+
+            if (Order == 0 && Trigger == AnimationTrigger.After)
+            {
+                Trigger = AnimationTrigger.OnLoad;
+            }
         }
 
         public void PreviewAnimation()
