@@ -53,18 +53,7 @@ namespace Fordi.Animations
 
         private void Start()
         {
-            m_animationObjects = FindObjectsOfType<AnimationObject>().ToList();
-            m_animationObjects = m_animationObjects.OrderBy(o => o.AnimationUnit.Order).ToList();
-
-            m_animationPlan.AnimationUnits.Clear();
-            foreach (var item in m_animationObjects)
-                m_animationPlan.AnimationUnits.Add(item.AnimationUnit);
-
-            m_planQueue.Clear();
-            foreach (var item in m_animationObjects)
-            {
-                m_planQueue.Enqueue(item);
-            }
+            Init();
 
             //Debugging purpose
             //Run();
@@ -86,6 +75,22 @@ namespace Fordi.Animations
             EngineObject.OnSelect -= EngineItem_OnSelect;
             AnimationPlanItem.OnValueChange -= AnimationPlanItem_OnValueChange;
             AnimationPlanView.OnOrderChange -= AnimationPlanView_OnOrderChange;
+        }
+
+        private void Init()
+        {
+            m_animationObjects = FindObjectsOfType<AnimationObject>().ToList();
+            m_animationObjects = m_animationObjects.OrderBy(o => o.AnimationUnit.Order).ToList();
+
+            m_animationPlan.AnimationUnits.Clear();
+            foreach (var item in m_animationObjects)
+                m_animationPlan.AnimationUnits.Add(item.AnimationUnit);
+
+            m_planQueue.Clear();
+            foreach (var item in m_animationObjects)
+            {
+                m_planQueue.Enqueue(item);
+            }
         }
 
         private void OpenView()
@@ -141,10 +146,12 @@ namespace Fordi.Animations
 
         private void AnimationPlanView_OnOrderChange(object sender, OrderChangeArgs e)
         {
-            var animationItem = (AnimationPlanItem)sender;
-            var unit = animationItem.AnimationUnit;
-            var animObject = m_animationObjects.Find(item => item.AnimationUnit.UnitGuid == unit.UnitGuid);
-
+            var newUnits = e.AnimationUnits;
+            foreach (var item in m_animationObjects)
+            {
+                item.AnimationUnit.Order = newUnits[item.AnimationUnit.UnitGuid].Order;
+            }
+            Init();
         }
 
         private IEnumerator AnimationRunner()

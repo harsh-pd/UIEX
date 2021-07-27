@@ -104,6 +104,27 @@ namespace Fordi.UI
             m_trigger.onValueChanged.AddListener(OnTriggerChange);
             m_animation.onValueChanged.AddListener(OnAnimationChange);
             m_delay.onValueChanged.AddListener(OnDelayChange);
+
+            RefreshTrigger();
+        }
+
+        public void RefreshTrigger()
+        {
+            if (m_animationUnit.Order == 0 && m_animationUnit.Trigger == AnimationTrigger.After)
+            {
+                m_animationUnit.Trigger = AnimationTrigger.OnLoad;
+                m_trigger.options.Clear();
+                var enums = Enum.GetNames(typeof(AnimationTrigger)).ToList();
+                enums.Remove("After");
+                m_trigger.AddOptions(enums);
+                m_trigger.value = (int)AnimationTrigger.OnLoad;
+            }
+            else
+            {
+                m_trigger.options.Clear();
+                m_trigger.AddOptions(Enum.GetNames(typeof(AnimationTrigger)).ToList());
+                m_trigger.value = (int)m_animationUnit.Trigger;
+            }
         }
 
         public void OnTriggerChange(int index)
